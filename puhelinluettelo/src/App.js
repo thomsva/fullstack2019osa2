@@ -10,8 +10,17 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
     console.log('button pressed', event.target)
-    setPersons(persons.concat({ name: newName }))
-    setNewName('')
+
+    console.log('exists', persons.find(person => person.name === newName) === undefined)
+
+
+
+    if (persons.find(person => person.name === newName) === undefined) {
+      setPersons(persons.concat({ name: newName }))
+      setNewName('')
+    }
+    else
+      alert(`${newName} on jo luettelossa!!!`)
   }
 
   const handleNameChange = (event) => {
