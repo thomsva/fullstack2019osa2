@@ -1,6 +1,36 @@
 import React, { useState } from 'react'
 import Person from './components/Person'
 
+
+const PersonForm = (props) => {
+  return (
+    <form onSubmit={props.onSubmit}>
+      <div>nimi: <input value={props.newName} onChange={props.handleNameChange} /></div>
+      <div>numero: <input value={props.newNumber} onChange={props.handleNumberChange} /></div>
+      <div><button type="submit">lisää</button></div>
+    </form>
+  )
+}
+
+const Persons = ({ persons, filter }) => {
+  return (
+    <div>
+      {persons
+        .filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
+        .map(person =>
+          <Person
+            key={person.name}
+            person={person}
+          />
+        )}
+    </div>
+  )
+}
+
+const Filter = ({ filter, handleFilterChange }) =>
+  (<div>rajaa näytettäviä <input value={filter} onChange={handleFilterChange} /> </div>)
+
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456' },
@@ -35,30 +65,23 @@ const App = () => {
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value)
-
   }
 
-  const rows = () => persons
-    .filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
-    .map(person =>
-      <Person
-        key={person.name}
-        person={person}
-      />
-    )
 
   return (
     <div>
       <h1>Puhelinluettelo</h1>
-      <div>rajaa näytettäviä <input value={filter} onChange={handleFilterChange} /> </div>
+      <Filter filter={filter} handleFilterChange={handleFilterChange} />
+
       <h2>Lisää uusi</h2>
-      <form onSubmit={addPerson}>
-        <div>nimi: <input value={newName} onChange={handleNameChange} /></div>
-        <div>numero: <input value={newNumber} onChange={handleNumberChange} /></div>
-        <div><button type="submit">lisää</button></div>
-      </form>
+      <PersonForm handleNameChange={handleNameChange}
+        newName={newName}
+        handleNumberChange={handleNumberChange}
+        newNumber={newNumber}
+        onSubmit={addPerson}
+      />
       <h2>Numerot</h2>
-      {rows()}
+      <Persons persons={persons} filter={filter} />
     </div>
   )
 
