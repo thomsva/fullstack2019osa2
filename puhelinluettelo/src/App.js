@@ -54,10 +54,21 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
     console.log('button pressed', event.target)
+    const personObject = {
+      name: newName,
+      number: newNumber
+    }
+
     if (persons.find(person => person.name === newName) === undefined) {
-      setPersons(persons.concat({ name: newName, number: newNumber }))
-      setNewName('')
-      setNewNumber('')
+      axios
+        .post('http://localhost:3001/persons', personObject)
+        .then(response => {
+          setPersons(persons.concat({ name: newName, number: newNumber }))
+          setNewName('')
+          setNewNumber('')
+        })
+
+
     }
     else
       alert(`${newName} on jo luettelossa!!!`)
