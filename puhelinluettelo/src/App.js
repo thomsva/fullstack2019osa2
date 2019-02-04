@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import Person from './components/Person'
 import personService from './services/persons'
 
@@ -33,6 +32,8 @@ const Filter = ({ filter, handleFilterChange }) =>
   (<div>rajaa näytettäviä <input value={filter} onChange={handleFilterChange} /> </div>)
 
 
+
+
 const App = () => {
   const [persons, setPersons] = useState([])
 
@@ -40,9 +41,8 @@ const App = () => {
     console.log('effect')
     personService
       .getAll()
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
 
