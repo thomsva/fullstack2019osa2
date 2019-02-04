@@ -82,8 +82,24 @@ const App = () => {
           setNewNumber('')
         })
     }
-    else
-      alert(`${newName} on jo luettelossa!!!`)
+    else {
+      if (window.confirm(`${newName} on jo luettelossa! Korvataanko vanha numero uudella?`)) {
+        const personToBeChanged = persons.find(person => person.name === newName)
+        const personUpdated = { ...personToBeChanged, number: newNumber }
+
+        personService
+          .update(personToBeChanged.id, personUpdated)
+          .then(() => personService
+            .getAll()
+            .then(initialPersons => {
+              setPersons(initialPersons)
+            })
+            .then(() => {
+              setNewName('')
+              setNewNumber('')
+            }))
+      }
+    }
   }
 
   const handleNameChange = (event) => {
