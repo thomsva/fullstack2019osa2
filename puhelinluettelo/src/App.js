@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Person from './components/Person'
+import personService from './services/persons'
 
 
 const PersonForm = (props) => {
@@ -37,8 +38,8 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
         console.log('promise fulfilled')
         setPersons(response.data)
@@ -60,15 +61,13 @@ const App = () => {
     }
 
     if (persons.find(person => person.name === newName) === undefined) {
-      axios
-        .post('http://localhost:3001/persons', personObject)
+      personService
+        .create(personObject)
         .then(response => {
           setPersons(persons.concat({ name: newName, number: newNumber }))
           setNewName('')
           setNewNumber('')
         })
-
-
     }
     else
       alert(`${newName} on jo luettelossa!!!`)
