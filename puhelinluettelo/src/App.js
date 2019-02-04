@@ -13,7 +13,9 @@ const PersonForm = (props) => {
   )
 }
 
-const Persons = ({ persons, filter }) => {
+const Persons = ({ persons, filter, removePerson }) => {
+
+
   return (
     <div>
       {persons
@@ -22,6 +24,7 @@ const Persons = ({ persons, filter }) => {
           <Person
             key={person.name}
             person={person}
+            deletePressed={() => removePerson(person.id, person.name)}
           />
         )}
     </div>
@@ -38,7 +41,6 @@ const App = () => {
   const [persons, setPersons] = useState([])
 
   useEffect(() => {
-    console.log('effect')
     personService
       .getAll()
       .then(initialPersons => {
@@ -50,7 +52,18 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
 
-
+  const removePerson = (id, name) => {
+    console.log('pressed delete button for ', id)
+    if (window.confirm(`Haluatko varmasti poistaa ${name}?`)) {
+      personService
+        .remove(id)
+        .then(() => personService
+          .getAll()
+          .then(initialPersons => {
+            setPersons(initialPersons)
+          }))
+    }
+  }
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -64,7 +77,7 @@ const App = () => {
       personService
         .create(personObject)
         .then(response => {
-          setPersons(persons.concat({ name: newName, number: newNumber }))
+          setPersons(persons.concat({ name: newName, number: newNumber, id: response.id }))
           setNewName('')
           setNewNumber('')
         })
@@ -100,7 +113,7 @@ const App = () => {
         onSubmit={addPerson}
       />
       <h2>Numerot</h2>
-      <Persons persons={persons} filter={filter} />
+      <Persons persons={persons} filter={filter} removePerson={removePerson} />
     </div>
   )
 

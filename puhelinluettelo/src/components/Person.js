@@ -4,7 +4,7 @@ const Person = props => {
   console.log('props:', props)
 
   return (
-    <p>{props.person.name}  {props.person.number}</p>
+    <p>{props.person.name}  {props.person.number} <button onClick={props.deletePressed}>delete</button> </p>
   )
 }
 
