@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Person from './components/Person'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 
@@ -51,6 +52,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState('')
+  const [notificationType, setNotificationType] = useState('')
 
   const removePerson = (id, name) => {
     console.log('pressed delete button for ', id)
@@ -62,6 +65,11 @@ const App = () => {
           .then(initialPersons => {
             setPersons(initialPersons)
           }))
+      setNotification('Henkilö ' + name + ' poistettu onnistuneesti.')
+      setNotificationType('ok')
+      setTimeout(() => {
+        setNotification(null)
+      }, 2000)
     }
   }
 
@@ -81,6 +89,11 @@ const App = () => {
           setNewName('')
           setNewNumber('')
         })
+      setNotification('Henkilön ' + personObject.name + ' lisääminen onnistui.')
+      setNotificationType('ok')
+      setTimeout(() => {
+        setNotification(null)
+      }, 2000)
     }
     else {
       if (window.confirm(`${newName} on jo luettelossa! Korvataanko vanha numero uudella?`)) {
@@ -98,6 +111,11 @@ const App = () => {
               setNewName('')
               setNewNumber('')
             }))
+        setNotification('Henkilön ' + personUpdated.name + ' muutos onnistui.')
+        setNotificationType('ok')
+        setTimeout(() => {
+          setNotification(null)
+        }, 2000)
       }
     }
   }
@@ -119,6 +137,7 @@ const App = () => {
   return (
     <div>
       <h1>Puhelinluettelo</h1>
+      <Notification message={notification} type={notificationType} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
       <h2>Lisää uusi</h2>
