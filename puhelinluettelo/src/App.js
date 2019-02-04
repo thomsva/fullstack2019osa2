@@ -65,11 +65,24 @@ const App = () => {
           .then(initialPersons => {
             setPersons(initialPersons)
           }))
-      setNotification('Henkilö ' + name + ' poistettu onnistuneesti.')
-      setNotificationType('ok')
-      setTimeout(() => {
-        setNotification(null)
-      }, 2000)
+        .then(() => {
+          setNotification('Henkilö ' + name + ' poistettu onnistuneesti.')
+          setNotificationType('ok')
+          setTimeout(() => {
+            setNotification(null)
+          }, 2000)
+        })
+        .catch(error => {
+          console.log('delete operation failed')
+          setNotification('Henkilö ' + name + ' poistettu  oli jo poistettu. Päivitetään näkymä.')
+          setNotificationType('error')
+          personService
+            .getAll()
+            .then(initialPersons => setPersons(initialPersons))
+          setTimeout(() => {
+            setNotification(null)
+          }, 2000)
+        })
     }
   }
 
@@ -110,14 +123,34 @@ const App = () => {
             .then(() => {
               setNewName('')
               setNewNumber('')
-            }))
-        setNotification('Henkilön ' + personUpdated.name + ' muutos onnistui.')
-        setNotificationType('ok')
-        setTimeout(() => {
-          setNotification(null)
-        }, 2000)
+            })
+            .then(() => {
+              setNotification('Henkilön ' + personUpdated.name + ' muutos onnistui.')
+              setNotificationType('ok')
+              setTimeout(() => {
+                setNotification(null)
+              }, 2000)
+            })
+          )
+          .catch(error => {
+            console.log('Error, person has been deleted')
+            personService
+              .getAll()
+              .then(initialPersons => setPersons(initialPersons))
+            setNewName('')
+            setNewNumber('')
+            setNotification('Henkilö ' + personUpdated.name + ' oli jo poistettu.')
+            setNotificationType('error')
+            setTimeout(() => {
+              setNotification(null)
+            }, 2000)
+
+          })
+
+
       }
     }
+
   }
 
   const handleNameChange = (event) => {
