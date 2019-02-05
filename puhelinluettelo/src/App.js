@@ -16,7 +16,6 @@ const PersonForm = (props) => {
 
 const Persons = ({ persons, filter, removePerson }) => {
 
-
   return (
     <div>
       {persons
