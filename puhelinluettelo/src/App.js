@@ -35,16 +35,14 @@ const Filter = ({ filter, handleFilterChange }) =>
   (<div>rajaa näytettäviä <input value={filter} onChange={handleFilterChange} /> </div>)
 
 
-
-
 const App = () => {
   const [persons, setPersons] = useState([])
 
   useEffect(() => {
     personService
       .getAll()
-      .then(initialPersons => {
-        setPersons(initialPersons)
+      .then(updatedPersons => {
+        setPersons(updatedPersons)
       })
   }, [])
 
@@ -61,8 +59,8 @@ const App = () => {
         .remove(id)
         .then(() => personService
           .getAll()
-          .then(initialPersons => {
-            setPersons(initialPersons)
+          .then(updatedPersons => {
+            setPersons(updatedPersons)
           }))
         .then(() => {
           setNotification('Henkilö ' + name + ' poistettu onnistuneesti.')
@@ -77,7 +75,7 @@ const App = () => {
           setNotificationType('error')
           personService
             .getAll()
-            .then(initialPersons => setPersons(initialPersons))
+            .then(updatedPersons => setPersons(updatedPersons))
           setTimeout(() => {
             setNotification(null)
           }, 2000)
@@ -87,27 +85,40 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    console.log('button pressed', event.target)
+    console.log('button pressed!!', event.target)
     const personObject = {
       name: newName,
       number: newNumber
     }
 
     if (persons.find(person => person.name === newName) === undefined) {
+      //person with same name does not exist
       personService
         .create(personObject)
         .then(response => {
-          setPersons(persons.concat({ name: newName, number: newNumber, id: response.id }))
+          personService
+            .getAll()
+            .then(updatedPersons => setPersons(updatedPersons))
           setNewName('')
           setNewNumber('')
+          setNotification('Henkilön ' + personObject.name + ' lisääminen onnistui.')
+          setNotificationType('ok')
+          setTimeout(() => {
+            setNotification(null)
+          }, 2000)
         })
-      setNotification('Henkilön ' + personObject.name + ' lisääminen onnistui.')
-      setNotificationType('ok')
-      setTimeout(() => {
-        setNotification(null)
-      }, 2000)
+        .catch(error => {
+          console.log(error.response.data)
+          setNotification(error.response.data.error)
+          setNotificationType('error')
+          setTimeout(() => {
+            setNotification(null)
+          }, 2000)
+        })
+
     }
     else {
+      //person with same name exists
       if (window.confirm(`${newName} on jo luettelossa! Korvataanko vanha numero uudella?`)) {
         const personToBeChanged = persons.find(person => person.name === newName)
         const personUpdated = { ...personToBeChanged, number: newNumber }
@@ -116,8 +127,8 @@ const App = () => {
           .update(personToBeChanged.id, personUpdated)
           .then(() => personService
             .getAll()
-            .then(initialPersons => {
-              setPersons(initialPersons)
+            .then(updatedPersons => {
+              setPersons(updatedPersons)
             })
             .then(() => {
               setNewName('')
@@ -132,24 +143,21 @@ const App = () => {
             })
           )
           .catch(error => {
-            console.log('Error, person has been deleted')
+            console.log(error.response.data)
             personService
               .getAll()
-              .then(initialPersons => setPersons(initialPersons))
+              .then(updatedPersons => setPersons(updatedPersons))
             setNewName('')
             setNewNumber('')
-            setNotification('Henkilö ' + personUpdated.name + ' oli jo poistettu.')
+            setNotification(error.response.data.error)
             setNotificationType('error')
             setTimeout(() => {
               setNotification(null)
             }, 2000)
-
           })
-
 
       }
     }
-
   }
 
   const handleNameChange = (event) => {
